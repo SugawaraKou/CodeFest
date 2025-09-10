@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CodeFest</title>
+    <link rel="stylesheet" href="http://cdn.webix.com/edge/webix.css" type="text/css">
+    <script src="http://cdn.webix.com/edge/webix.js" type="text/javascript"></script>
+    <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon">
+    <style>
+        body {
+            height: 80vh;
+            position: relative;
+        }
+
+        .center-div {
+            width: 200px;
+            height: 100px;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+<div id="areaA" class="center-div"></div>
+<script>
+    webix.ui({
+        container:"areaA",
+        view:"form", scroll:false,
+        width:300,
+        css:"webix_dark",
+        elements:[
+            { view:"button", type: "image", id: "image", image:"templates/img/QR_bot.jpg",autowidth:true, height:350, width:100, click: function() {window.open(bot_href)}},
+            { view:"text", id: 'token', label:"Token" },
+            { view:"text", id: 'login', label:"Логин" },
+            { view:"text", id: 'password', type:'password', label:"Пароль"},
+            { view:"button", id: "tg_connect", label:"Telegram получение токена", click: function() {window.open(bot_href)}},
+            { margin:5, cols:[
+                { view:"button", id: "in_1", label:"Войти" , css:"webix_primary", click: doOnClick_Login_send, hotkey: "enter" },
+                { view:"button", id: "reg_1", label:"Регистрация", click: doOnClick_Registration },
+                { view:"button", id: "reg_2", label:"Зарегистрироваться", css:"webix_primary", click: doOnClick_Registration_send, width: 200},
+                { view:"button", id: "in_2", label:"Войти", click: doOnClick_Login },
+            ]}
+        ]
+    });
+
+    function doOnClick_Login(){
+        $$("in_1").show();
+        $$("reg_1").show();
+        $$("login").show();
+        $$("password").show();
+        $$("in_2").hide();
+        $$("reg_2").hide();
+        $$("token").hide();
+        $$("tg_connect").hide();
+        $$("image").hide();
+    }
+
+    function doOnClick_Registration(){
+        $$("in_1").hide();
+        $$("reg_1").hide();
+        $$("login").hide();
+        $$("password").hide();
+        $$("in_2").show();
+        $$("reg_2").show();
+        $$("token").show();
+        $$("tg_connect").show();
+        $$("image").show();
+    }
+
+    function doOnClick_Registration_send(){
+        var token = $$("token").getValue();
+        if (token){
+            webix.ajax().sync().post("/registration", {"token": token}, function(data) {
+                if (data == '1') {
+                    webix.alert("Такого токена нет, перейдите в бота!", "alert-warning");
+                } else {
+                    window.location.href = '/page/hellow';
+                }
+            });
+        } else {
+            webix.alert("Введите токен!", "alert-warning");
+        }
+    }
+
+    function doOnClick_Login_send(){
+        var login = $$("login").getValue();
+        var password = $$("password").getValue();
+        if (login && password){
+            webix.ajax().sync().post("/login", {"login": login, "password": password}, function(data) {
+				if (data == '1') {
+					webix.alert("Логин или пароль не правильные!", "alert-warning");
+				} else {
+				    window.location.href = '/page/hellow';
+				}
+			});
+        } else {
+            webix.alert("Логин или пароль не правильные!", "alert-warning");
+        }
+    }
+
+    $$("in_1").show();
+    $$("reg_1").show();
+    $$("login").show();
+    $$("password").show();
+    $$("in_2").hide();
+    $$("reg_2").hide();
+    $$("token").hide();
+    $$("tg_connect").hide();
+    $$("image").hide();
+
+    var bot_href = '{{BOT_HREF}}';
+</script>
+</body>
+</html>
